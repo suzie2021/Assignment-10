@@ -1,36 +1,49 @@
-let {Todo, todos} = require('../models/Todo');
+// let {Todo, todos} = require('../models/Todo');
+const Todo = require('../models/TodoV2')
+/*
+   CRUD
+   C - Create or insert
+   R - Read or retrieve
+   U - Update or make changes to an existing object]
+   D - Delete or remove
+*/
+
 
 class TodoController {
-    static addTodo (data) {
-        let {name, description} = data;
-        let todo = new Todo(name, description);
-        todos.push({...todo})
+    static async addTodo (data) {
+        // let {name, description} = data;
+        let todo = new Todo(data);
+
+        await todo.save()
+        let todos = await Todo.find();
         return todos;
     }
-    static fetchTodos () {
-        return todos;
+    static async fetchTodos () {
+        return await Todo.find();
     }
 
-    static getTodo(id) {
-        if(todos.length) {
-            let todo = todos.find(todo => todo.id == id);
-            if (todo) {
-                return todo;
-            }
+    static async getTodo(id) {
+        return await Todo.findById(id)
+    }
+
+    static async deleteTodo(id) {
+        let todo = await this.getTodo(id);
+
+        if(!todo) {
             return "Todo not found"
-        } else {
-            return "No todos in database"
-        }
-    }
-    static deleteTodo(id) {
-        let todo = this.getTodo(id);
+        } 
 
-        if(!todo =="Todo not found" || !todo =="No todos in database") {
-            todos = todos.filter(item => item.id !== todo.id);
-            return todos;
-        }
-        return todo;
+        return await Todo.findOneAndRemove({_id: todo._id});
     }
-}
+
+    static async markAsComplete(id, completed) {
+        let todo = await this.getTodo(id);
+
+        if(!todo) {
+            return "Todo not found"
+        } 
+        return await Todo.findByIdAndUpdate({_id:id}, {completed: completed})
+    }
+ }
 
 module.exports = TodoController;
