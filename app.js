@@ -30,3 +30,4 @@ mongoose.connect(DATABASE_URL).then(() => {
 }).catch(error => {
     console.error("Failed to start the server due to : ",error)
 })
+console.log(process.env.DATABASE_URL);
